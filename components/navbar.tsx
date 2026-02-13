@@ -51,11 +51,11 @@ export function Navbar() {
             <HiOutlineHome className="h-4 w-4" />
             Home
           </Link>
-          <Link href="/bonuses" className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+          <Link href="/rewards" className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
             <HiOutlineGift className="h-4 w-4" />
-            Bonuses
+            Rewards
           </Link>
-          <Link href="/#leaderboards" className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+          <Link href="/leaderboards" className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
             <HiOutlineChartBar className="h-4 w-4" />
             Leaderboards
           </Link>
@@ -97,11 +97,11 @@ export function Navbar() {
                 <HiOutlineHome className="h-4 w-4" />
                 Home
               </Link>
-              <Link href="/bonuses" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+              <Link href="/rewards" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
                 <HiOutlineGift className="h-4 w-4" />
-                Bonuses
+                Rewards
               </Link>
-              <Link href="/#leaderboards" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+              <Link href="/leaderboards" onClick={() => setMobileOpen(false)} className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
                 <HiOutlineChartBar className="h-4 w-4" />
                 Leaderboards
               </Link>
