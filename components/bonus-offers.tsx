@@ -3,7 +3,7 @@ import { Gift, ExternalLink } from "lucide-react"
 const bonuses = [
   {
     site: "CSGORoll",
-    code: "LAZARD",
+    code: "METRON",
     bonus: "3 Free Cases + 5% Deposit Bonus",
     color: "from-emerald-600/20 to-emerald-900/10",
     borderColor: "border-emerald-500/30",
@@ -11,7 +11,7 @@ const bonuses = [
   },
   {
     site: "HypeDrop",
-    code: "LAZARD",
+    code: "METRON",
     bonus: "Free Case on Sign Up",
     color: "from-blue-600/20 to-blue-900/10",
     borderColor: "border-blue-500/30",
@@ -19,7 +19,7 @@ const bonuses = [
   },
   {
     site: "Clash.GG",
-    code: "LAZARD",
+    code: "METRON",
     bonus: "5% Deposit Bonus",
     color: "from-amber-600/20 to-amber-900/10",
     borderColor: "border-amber-500/30",
@@ -27,7 +27,7 @@ const bonuses = [
   },
   {
     site: "Gamdom",
-    code: "LAZARD",
+    code: "METRON",
     bonus: "15% Rakeback for 7 Days",
     color: "from-red-600/20 to-red-900/10",
     borderColor: "border-red-500/30",

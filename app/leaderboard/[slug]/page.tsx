@@ -16,7 +16,7 @@ const siteData: Record<
 > = {
   csgoroll: {
     name: "CSGORoll",
-    code: "LAZARD",
+    code: "METRON",
     rules: [
       { type: "Slots", multiplier: "1:1" },
       { type: "Sportsbook", multiplier: "1:2" },
@@ -39,7 +39,7 @@ const siteData: Record<
   },
   hypedrop: {
     name: "HypeDrop",
-    code: "LAZARD",
+    code: "METRON",
     rules: [
       { type: "Cases", multiplier: "1:1" },
       { type: "Battles", multiplier: "1:1.5" },
@@ -57,7 +57,7 @@ const siteData: Record<
   },
   razed: {
     name: "Razed",
-    code: "LAZARD",
+    code: "METRON",
     rules: [
       { type: "Slots", multiplier: "1:1" },
       { type: "Sportsbook", multiplier: "1:2" },
@@ -80,7 +80,7 @@ const siteData: Record<
   },
   gamdom: {
     name: "Gamdom",
-    code: "LAZARD",
+    code: "METRON",
     rules: [
       { type: "Slots", multiplier: "1:1" },
       { type: "Sports", multiplier: "1:2" },
@@ -103,7 +103,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   const data = siteData[slug]
   return {
-    title: data ? `LaZard | ${data.name} Leaderboard` : "LaZard | Leaderboard",
+    title: data ? `Metron | ${data.name} Leaderboard` : "Metron | Leaderboard",
     description: data
       ? `Compete on the ${data.name} leaderboard for a share of the $${data.prizePool} prize pool!`
       : "View leaderboard rankings",

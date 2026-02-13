@@ -1,13 +1,17 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Chakra_Petch } from 'next/font/google'
 
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const chakraPetch = Chakra_Petch({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  variable: '--font-chakra-petch',
+})
 
 export const metadata: Metadata = {
-  title: 'LaZard',
-  description: 'Unlock exclusive deposit bonuses or free cases and support me across your favorite sites with the code LaZard.',
+  title: 'Metron',
+  description: 'Use code Metron on your go-to platforms to grab special deposit rewards or complimentary cases and give me a little boost while you’re at it. Activate it now and take advantage of the extra benefits waiting for you.',
 }
 
 export default function RootLayout({
@@ -16,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={chakraPetch.variable}>
       <body className="font-sans antialiased min-h-screen bg-background text-foreground">{children}</body>
     </html>
   )
