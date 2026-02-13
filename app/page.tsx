@@ -10,7 +10,6 @@ export default function Page() {
       <main className="flex-1">
         <Hero />
         <BonusOffers />
-        
       </main>
       <Footer />
     </div>
