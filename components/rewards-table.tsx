@@ -1,8 +1,15 @@
 "use client";
 
 import Image from "next/image";
+import { motion } from "framer-motion";
 
-const CLAIM_URL = "https://discord.gg/rollinriches";
+const CLAIM_URL = "https://stake.com/?c=metron&offer=metron";
+
+function tierImageSlug(tier: string): string {
+  if (tier.startsWith("Platinum")) return "platinum";
+  if (tier.startsWith("Diamond")) return "diamond";
+  return tier.toLowerCase();
+}
 
 const TIER_STYLES: Record<
   string,
@@ -28,17 +35,57 @@ const TIER_STYLES: Record<
     bg: "rgba(255, 215, 0, 0.082)",
     border: "rgba(255, 215, 0, 0.19)",
   },
-  Emerald: {
-    color: "rgb(80, 200, 120)",
-    bg: "rgba(80, 200, 120, 0.082)",
-    border: "rgba(80, 200, 120, 0.19)",
+  "Platinum I": {
+    color: "rgb(229, 228, 226)",
+    bg: "rgba(229, 228, 226, 0.082)",
+    border: "rgba(229, 228, 226, 0.19)",
   },
-  Sapphire: {
-    color: "rgb(15, 82, 186)",
-    bg: "rgba(15, 82, 186, 0.082)",
-    border: "rgba(15, 82, 186, 0.19)",
+  "Platinum II": {
+    color: "rgb(229, 228, 226)",
+    bg: "rgba(229, 228, 226, 0.082)",
+    border: "rgba(229, 228, 226, 0.19)",
   },
-  Diamond: {
+  "Platinum III": {
+    color: "rgb(229, 228, 226)",
+    bg: "rgba(229, 228, 226, 0.082)",
+    border: "rgba(229, 228, 226, 0.19)",
+  },
+  "Platinum IV": {
+    color: "rgb(229, 228, 226)",
+    bg: "rgba(229, 228, 226, 0.082)",
+    border: "rgba(229, 228, 226, 0.19)",
+  },
+  "Platinum V": {
+    color: "rgb(229, 228, 226)",
+    bg: "rgba(229, 228, 226, 0.082)",
+    border: "rgba(229, 228, 226, 0.19)",
+  },
+  "Platinum VI": {
+    color: "rgb(229, 228, 226)",
+    bg: "rgba(229, 228, 226, 0.082)",
+    border: "rgba(229, 228, 226, 0.19)",
+  },
+  "Diamond I": {
+    color: "rgb(64, 224, 208)",
+    bg: "rgba(64, 224, 208, 0.082)",
+    border: "rgba(64, 224, 208, 0.19)",
+  },
+  "Diamond II": {
+    color: "rgb(64, 224, 208)",
+    bg: "rgba(64, 224, 208, 0.082)",
+    border: "rgba(64, 224, 208, 0.19)",
+  },
+  "Diamond III": {
+    color: "rgb(64, 224, 208)",
+    bg: "rgba(64, 224, 208, 0.082)",
+    border: "rgba(64, 224, 208, 0.19)",
+  },
+  "Diamond IV": {
+    color: "rgb(64, 224, 208)",
+    bg: "rgba(64, 224, 208, 0.082)",
+    border: "rgba(64, 224, 208, 0.19)",
+  },
+  "Diamond V": {
     color: "rgb(64, 224, 208)",
     bg: "rgba(64, 224, 208, 0.082)",
     border: "rgba(64, 224, 208, 0.19)",
@@ -51,46 +98,74 @@ const TIER_STYLES: Record<
 };
 
 const REWARDS: { tier: string; volume: string; bonus: string }[] = [
-  { tier: "Wood", volume: "10,000", bonus: "25" },
-  { tier: "Wood", volume: "25,000", bonus: "63" },
-  { tier: "Bronze", volume: "50,000", bonus: "125" },
-  { tier: "Bronze", volume: "75,000", bonus: "188" },
-  { tier: "Bronze", volume: "100,000", bonus: "250" },
-  { tier: "Silver", volume: "150,000", bonus: "375" },
-  { tier: "Silver", volume: "200,000", bonus: "500" },
-  { tier: "Silver", volume: "250,000", bonus: "625" },
-  { tier: "Gold", volume: "350,000", bonus: "875" },
-  { tier: "Gold", volume: "500,000", bonus: "1,250" },
-  { tier: "Gold", volume: "750,000", bonus: "1,875" },
-  { tier: "Emerald", volume: "1,000,000", bonus: "2,500" },
-  { tier: "Emerald", volume: "1,250,000", bonus: "3,125" },
-  { tier: "Sapphire", volume: "1,500,000", bonus: "3,750" },
-  { tier: "Sapphire", volume: "2,000,000", bonus: "5,000" },
-  { tier: "Diamond", volume: "2,500,000", bonus: "6,250" },
-  { tier: "Diamond", volume: "5,000,000", bonus: "12,500" },
-  { tier: "Obsidian", volume: "10,000,000", bonus: "25,000" },
-  { tier: "Obsidian", volume: "15,000,000", bonus: "37,500" },
-  { tier: "Obsidian", volume: "20,000,000", bonus: "50,000" },
-  { tier: "Obsidian", volume: "30,000,000", bonus: "75,000" },
-  { tier: "Obsidian", volume: "40,000,000", bonus: "100,000" },
+  { tier: "Wood", volume: "1,000", bonus: "—" },
+  { tier: "Bronze", volume: "10,000", bonus: "—" },
+  { tier: "Silver", volume: "50,000", bonus: "—" },
+  { tier: "Gold", volume: "100,000", bonus: "—" },
+  { tier: "Platinum I", volume: "250,000", bonus: "—" },
+  { tier: "Platinum II", volume: "500,000", bonus: "—" },
+  { tier: "Platinum III", volume: "1,000,000", bonus: "—" },
+  { tier: "Platinum IV", volume: "2,500,000", bonus: "—" },
+  { tier: "Platinum V", volume: "5,000,000", bonus: "—" },
+  { tier: "Platinum VI", volume: "10,000,000", bonus: "—" },
+  { tier: "Diamond I", volume: "25,000,000", bonus: "—" },
+  { tier: "Diamond II", volume: "50,000,000", bonus: "—" },
+  { tier: "Diamond III", volume: "100,000,000", bonus: "—" },
+  { tier: "Diamond IV", volume: "250,000,000", bonus: "—" },
+  { tier: "Diamond V", volume: "500,000,000", bonus: "—" },
+  { tier: "Obsidian", volume: "1,000,000,000", bonus: "—" },
 ];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.04,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const rowVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      type: "spring" as const,
+      stiffness: 300,
+      damping: 26,
+    },
+  },
+};
 
 export function RewardsTable() {
   return (
-    <div className="transition-all duration-700 ease-out opacity-100 translate-y-0">
-      <div
+    <motion.div
+      className="transition-all duration-700 ease-out"
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+    >
+      <motion.div
         className="rounded-xl sm:rounded-t-none overflow-hidden"
         style={{
           background: "rgba(15, 15, 15, 0.7)",
           border: "1px solid rgba(234, 234, 234, 0.05)",
         }}
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
       >
         {REWARDS.map((row, i) => {
           const style = TIER_STYLES[row.tier];
           const isLast = i === REWARDS.length - 1;
           return (
-            <div
+            <motion.div
               key={`${row.tier}-${row.volume}-${i}`}
+              variants={rowVariants}
+              whileHover={{ backgroundColor: "rgba(234, 234, 234, 0.03)" }}
               className="flex items-center px-3 sm:px-4 md:px-6 py-3 sm:py-3.5 transition-all duration-200 group"
               style={{
                 borderBottom: isLast
@@ -105,7 +180,7 @@ export function RewardsTable() {
                   <div className="w-10 h-10 relative transition-transform duration-200 group-hover:scale-110">
                     <Image
                       alt={row.tier}
-                      src={`/images/tiers/${row.tier.toLowerCase()}.png`}
+                      src={`/images/tiers/${tierImageSlug(row.tier)}.png`}
                       fill
                       className="object-contain"
                       sizes="40px"
@@ -134,7 +209,7 @@ export function RewardsTable() {
                 <div className="w-10 h-10 relative flex-shrink-0">
                   <Image
                     alt={row.tier}
-                    src={`/images/tiers/${row.tier.toLowerCase()}.png`}
+                    src={`/images/tiers/${tierImageSlug(row.tier)}.png`}
                     fill
                     className="object-contain"
                     sizes="40px"
@@ -160,27 +235,52 @@ export function RewardsTable() {
                   <span className="text-white">{row.bonus}</span>
                 </span>
               </div>
-              {/* Claim button */}
+              {/* Claim button — same style as hero Leaderboards button */}
               <div className="w-16 sm:w-24 flex justify-end ml-2 sm:ml-0">
                 <a
                   href={CLAIM_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-semibold text-[10px] sm:text-xs transition-all duration-150 whitespace-nowrap text-white"
-                  style={{
-                    background:
-                      "linear-gradient(rgb(177, 18, 38) 0%, rgb(139, 0, 0) 100%)",
-                    boxShadow:
-                      "rgb(90, 0, 0) 0px 3px 0px, rgba(177, 18, 38, 0.3) 0px 4px 8px, rgba(255, 255, 255, 0.15) 0px 1px 0px inset",
-                  }}
+                  className="
+                    relative overflow-hidden
+                    cursor-pointer
+                    px-3 sm:px-4 py-1.5 sm:py-2
+                    text-[10px] sm:text-xs font-semibold
+                    text-[#bc5045]
+                    border-2 border-[#bc5045]
+                    rounded-[34px]
+                    bg-transparent
+                    transition-all duration-300
+                    ease-[cubic-bezier(0.23,1,0.320,1)]
+                    hover:scale-110
+                    hover:text-[#212121]
+                    hover:shadow-[0_0_20px_rgba(188,80,69,0.4)]
+                    active:scale-100
+                    group
+                    flex items-center justify-center
+                    whitespace-nowrap
+                  "
                 >
+                  <span
+                    className="
+                      absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+                      w-[300%] aspect-square
+                      rounded-full
+                      bg-[#bc5045]
+                      scale-0
+                      transition-all duration-700
+                      ease-[cubic-bezier(0.23,1,0.320,1)]
+                      group-hover:scale-100
+                      -z-10
+                    "
+                  />
                   Claim
                 </a>
               </div>
-            </div>
+            </motion.div>
           );
         })}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

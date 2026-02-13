@@ -8,31 +8,7 @@ const bonuses = [
     color: "from-emerald-600/20 to-emerald-900/10",
     borderColor: "border-emerald-500/30",
     link: "#",
-  },
-  {
-    site: "HypeDrop",
-    code: "METRON",
-    bonus: "Free Case on Sign Up",
-    color: "from-blue-600/20 to-blue-900/10",
-    borderColor: "border-blue-500/30",
-    link: "#",
-  },
-  {
-    site: "Clash.GG",
-    code: "METRON",
-    bonus: "5% Deposit Bonus",
-    color: "from-amber-600/20 to-amber-900/10",
-    borderColor: "border-amber-500/30",
-    link: "#",
-  },
-  {
-    site: "Gamdom",
-    code: "METRON",
-    bonus: "15% Rakeback for 7 Days",
-    color: "from-red-600/20 to-red-900/10",
-    borderColor: "border-red-500/30",
-    link: "#",
-  },
+  }
 ]
 
 export function BonusOffers() {

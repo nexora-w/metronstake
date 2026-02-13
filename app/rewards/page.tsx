@@ -11,14 +11,14 @@ const sportsWorld = localFont({
 
 export default function RewardsPage() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-[url('/rewardbg-hero.png')] bg-center bg-cover bg-fixed bg-no-repeat">
       <Navbar />
-      <main className="flex-1 px-4 py-8 sm:px-6 md:px-8 lg:px-12">
-        <div className="mx-auto max-w-4xl mt-20">
+      <main className="flex-1 px-4 py-8 sm:px-6 md:px-8 lg:px-12 my-20">
+        <div className="mx-auto max-w-4xl">
           <div className="mb-8 text-center">
             <div className="flex items-center justify-center w-full">
               <div
-                className={`${sportsWorld.className} rewards-title-shadow text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-primary`}
+                className={`rewards-title-shadow text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-[#bc5045]`}
               >
                 Rewards
               </div>

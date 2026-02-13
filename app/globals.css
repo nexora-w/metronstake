@@ -8,8 +8,8 @@
   }
   .rewards-title-shadow {
     text-shadow:
-      0 0 20px hsl(var(--primary) / 0.5),
-      0 0 40px hsl(var(--primary) / 0.3),
+      0 0 20px #bc51459a,
+      0 0 40px #bc5145a6,
       0 2px 4px rgba(0, 0, 0, 0.5);
   }
 }
