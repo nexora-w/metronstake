@@ -69,50 +69,20 @@ const TIER_STYLES: Record<
     bg: "rgba(64, 224, 208, 0.082)",
     border: "rgba(64, 224, 208, 0.19)",
   },
-  "Diamond II": {
-    color: "rgb(64, 224, 208)",
-    bg: "rgba(64, 224, 208, 0.082)",
-    border: "rgba(64, 224, 208, 0.19)",
-  },
-  "Diamond III": {
-    color: "rgb(64, 224, 208)",
-    bg: "rgba(64, 224, 208, 0.082)",
-    border: "rgba(64, 224, 208, 0.19)",
-  },
-  "Diamond IV": {
-    color: "rgb(64, 224, 208)",
-    bg: "rgba(64, 224, 208, 0.082)",
-    border: "rgba(64, 224, 208, 0.19)",
-  },
-  "Diamond V": {
-    color: "rgb(64, 224, 208)",
-    bg: "rgba(64, 224, 208, 0.082)",
-    border: "rgba(64, 224, 208, 0.19)",
-  },
-  Obsidian: {
-    color: "rgb(107, 35, 142)",
-    bg: "rgba(107, 35, 142, 0.082)",
-    border: "rgba(107, 35, 142, 0.19)",
-  },
 };
 
 const REWARDS: { tier: string; volume: string; bonus: string }[] = [
-  { tier: "Wood", volume: "1,000", bonus: "15" },
-  { tier: "Bronze", volume: "10,000", bonus: "30" },
-  { tier: "Silver", volume: "50,000", bonus: "40" },
-  { tier: "Gold", volume: "100,000", bonus: "50" },
-  { tier: "Platinum I", volume: "250,000", bonus: "60" },
-  { tier: "Platinum II", volume: "500,000", bonus: "80" },
-  { tier: "Platinum III", volume: "1,000,000", bonus: "100" },
-  { tier: "Platinum IV", volume: "2,500,000", bonus: "125" },
-  { tier: "Platinum V", volume: "5,000,000", bonus: "250" },
-  { tier: "Platinum VI", volume: "10,000,000", bonus: "750" },
-  { tier: "Diamond I", volume: "25,000,000", bonus: "1500" },
-  { tier: "Diamond II", volume: "50,000,000", bonus: "3000" },
-  { tier: "Diamond III", volume: "100,000,000", bonus: "—" },
-  { tier: "Diamond IV", volume: "250,000,000", bonus: "—" },
-  { tier: "Diamond V", volume: "500,000,000", bonus: "—" },
-  { tier: "Obsidian", volume: "1,000,000,000", bonus: "—" },
+  { tier: "Wood", volume: "1,000", bonus: "10" },
+  { tier: "Bronze", volume: "10,000", bonus: "20" },
+  { tier: "Silver", volume: "50,000", bonus: "50" },
+  { tier: "Gold", volume: "100,000", bonus: "115" },
+  { tier: "Platinum I", volume: "250,000", bonus: "275" },
+  { tier: "Platinum II", volume: "500,000", bonus: "600" },
+  { tier: "Platinum III", volume: "1,000,000", bonus: "1,250" },
+  { tier: "Platinum IV", volume: "2,500,000", bonus: "3,000" },
+  { tier: "Platinum V", volume: "5,000,000", bonus: "6,500" },
+  { tier: "Platinum VI", volume: "10,000,000", bonus: "10,000" },
+  { tier: "Diamond I", volume: "25,000,000", bonus: "22,500" },
 ];
 
 export function RewardsTable() {
