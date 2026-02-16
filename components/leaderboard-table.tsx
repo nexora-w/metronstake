@@ -7,19 +7,19 @@ import { useState } from "react";
 const ROWS_PER_PAGE = 10;
 
 const MOCK_LEADERBOARD: { rank: number; player: string; volume: string; prize: string }[] = [
-  { rank: 1, player: "Metron", volume: "2,450,000", prize: "5,000" },
-  { rank: 2, player: "PlayerTwo", volume: "1,890,000", prize: "3,000" },
-  { rank: 3, player: "HighRoller", volume: "1,520,000", prize: "1,500" },
-  { rank: 4, player: "LuckySeven", volume: "1,100,000", prize: "1,000" },
-  { rank: 5, player: "AceSpade", volume: "980,000", prize: "750" },
-  { rank: 6, player: "DiamondHand", volume: "750,000", prize: "500" },
-  { rank: 7, player: "StackMaster", volume: "620,000", prize: "350" },
-  { rank: 8, player: "GreenMachine", volume: "510,000", prize: "250" },
-  { rank: 9, player: "BetKing", volume: "445,000", prize: "150" },
-  { rank: 10, player: "AllInAndy", volume: "380,000", prize: "100" },
-  { rank: 11, player: "SilverFox", volume: "295,000", prize: "75" },
-  { rank: 12, player: "BronzeBoss", volume: "210,000", prize: "50" },
-  { rank: 13, player: "WoodWorker", volume: "95,000", prize: "25" },
+  { rank: 1, player: "Metron", volume: "2,450,000", prize: "1,500" },
+  { rank: 2, player: "PlayerTwo", volume: "1,890,000", prize: "750" },
+  { rank: 3, player: "HighRoller", volume: "1,520,000", prize: "250" },
+  { rank: 4, player: "LuckySeven", volume: "1,100,000", prize: "125" },
+  { rank: 5, player: "AceSpade", volume: "980,000", prize: "100" },
+  { rank: 6, player: "DiamondHand", volume: "750,000", prize: "80" },
+  { rank: 7, player: "StackMaster", volume: "620,000", prize: "60" },
+  { rank: 8, player: "GreenMachine", volume: "510,000", prize: "50" },
+  { rank: 9, player: "BetKing", volume: "445,000", prize: "40" },
+  { rank: 10, player: "AllInAndy", volume: "380,000", prize: "30" },
+  { rank: 11, player: "SilverFox", volume: "295,000", prize: "15" },
+  { rank: 12, player: "BronzeBoss", volume: "210,000", prize: "0" },
+  { rank: 13, player: "WoodWorker", volume: "95,000", prize: "0" },
 ];
 
 const RANK_STYLES: Record<number, { bg: string; text: string }> = {
@@ -110,7 +110,7 @@ export function LeaderboardTable() {
                 </div>
                 <div 
                   className="flex items-center justify-center mt-2 w-4/5 p-2 gap-3 rounded-lg"
-                  style={{ backgroundColor: rankStyle.bg, color: rankStyle.text }}
+                  style={{ color: rankStyle.text }}
                 >
                   <div
                     className="text-lg font-bold"
