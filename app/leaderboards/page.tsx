@@ -69,6 +69,16 @@ export default function LeaderboardsPage() {
             </div>
           </div>
           <LeaderboardTable />
+          <div className="mt-6 rounded border border-amber-500/40 bg-black/40 px-4 py-3 backdrop-blur-sm">
+            <p className="text-sm font-semibold uppercase tracking-wide text-amber-400/90">
+              How games count toward the leaderboard
+            </p>
+            <ul className="space-y-1 text-sm text-white/90">
+              <li><span className="text-amber-300 font-medium">RTP ≤ 98%</span> → 100% of wagered amount counts</li>
+              <li><span className="text-amber-300 font-medium">RTP &gt; 98%</span> → 50% of wagered amount counts</li>
+              <li><span className="text-amber-300 font-medium">RTP ≥ 99%</span> → 10% of wagered amount counts</li>
+            </ul>
+          </div>
         </div>
       </main>
       <Footer />
