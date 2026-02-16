@@ -37,7 +37,7 @@ export const metadata: Metadata = {
       'Use code Metron on your go-to platforms to grab special deposit rewards or complimentary cases. Activate now for extra benefits.',
     images: [
       {
-        url: '/og.png',
+        url: 'https://metronstake.vercel.app/og.png',
         width: 1200,
         height: 630,
         alt: 'Metron — Bonus codes & rewards',
@@ -49,10 +49,10 @@ export const metadata: Metadata = {
     title: 'Metron — Bonus codes & rewards',
     description:
       'Use code Metron on your go-to platforms to grab special deposit rewards or complimentary cases. Activate now for extra benefits.',
-    images: ['/og.png'],
+    images: ['https://metronstake.vercel.app/og.png'],
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: 'https://metronstake.vercel.app/favicon.ico',
   },
   alternates: {
     canonical: siteUrl,
