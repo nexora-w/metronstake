@@ -12,6 +12,9 @@ export function Footer() {
           <Link href="/#bonuses" className="transition-colors hover:text-foreground">Bonuses</Link>
           <Link href="/#leaderboards" className="transition-colors hover:text-foreground">Leaderboards</Link>
         </nav>
+        <p>
+          Made with 💖 by <Link href="http://nexorahq.dev/?ref=metron" target="_blank" className="transition-colors text-primary">Nexora</Link>
+        </p>
       </div>
     </footer>
   )
