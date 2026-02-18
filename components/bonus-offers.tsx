@@ -44,8 +44,14 @@ export function BonusOffers() {
               </p>
             </div>
 
-            <p className="mb-5 flex-1 text-sm leading-relaxed text-muted-foreground line-clamp-2">
-              3 Free Cases + 5% Deposit Bonus
+            <p className="mb-1 flex-1 text-sm leading-relaxed text-muted-foreground line-clamp-2">
+              - 3 Free Cases
+            </p>
+            <p className="mb-1 flex-1 text-sm leading-relaxed text-muted-foreground line-clamp-2">
+              - 5% Deposit Bonus
+            </p>
+            <p className="mb-1 flex-1 text-sm leading-relaxed text-muted-foreground line-clamp-2">
+              - 3.5% instant rakeback
             </p>
 
             <div className="flex items-center justify-between gap-3 rounded-xl bg-background/40 px-3 py-2.5 ring-1 ring-border/50 backdrop-blur-sm">
