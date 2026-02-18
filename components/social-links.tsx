@@ -1,11 +1,10 @@
 import Link from "next/link"
-import { FaXTwitter, FaDiscord, FaYoutube, FaTwitch } from "react-icons/fa6"
+import { FaXTwitter, FaDiscord, FaYoutube, FaTwitch, FaKickstarter } from "react-icons/fa6"
 
 const socials = [
-  { href: "https://x.com", icon: FaXTwitter, label: "X (Twitter)" },
-  { href: "https://discord.gg", icon: FaDiscord, label: "Discord" },
-  { href: "https://youtube.com", icon: FaYoutube, label: "YouTube" },
-  { href: "https://twitch.tv", icon: FaTwitch, label: "Twitch" },
+  { href: "https://x.com/KingMetroN", icon: FaXTwitter, label: "X (Twitter)" },
+  { href: "https://discord.gg/DksZ9jEmGe", icon: FaDiscord, label: "Discord" },
+  { href: "https://kick.com/metron", icon: FaKickstarter, label: "Kick" }
 ]
 
 export function SocialLinks() {
