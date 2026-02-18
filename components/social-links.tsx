@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { FaXTwitter, FaDiscord, FaYoutube, FaTwitch, FaKickstarter } from "react-icons/fa6"
+import { FaXTwitter, FaDiscord, FaKickstarter } from "react-icons/fa6"
 
 const socials = [
   { href: "https://x.com/KingMetroN", icon: FaXTwitter, label: "X (Twitter)" },
