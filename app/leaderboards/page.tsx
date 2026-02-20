@@ -42,7 +42,7 @@ export default function LeaderboardsPage() {
                   >
                     $
                   </span>
-                  15,000
+                  3,000
                 </div>
                 <Image
                   src="/images/leaderboard/right.svg"
