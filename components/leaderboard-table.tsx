@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 const ROWS_PER_PAGE = 10;
 
@@ -21,8 +21,22 @@ const LEADERBOARD_TABS: { value: LeaderboardType; label: string }[] = [
   { value: "previous", label: "Previous" }
 ];
 
+const STATIC_LEADERBOARD: LeaderboardEntry[] = [
+  { rank: 1, leaderboard_type: "current", masked_username: "Plfokraker88i", wagered: 606.73, prize: "—", last_updated: "19-Feb-26 12:00 am" },
+  { rank: 2, leaderboard_type: "current", masked_username: "PaunJebeMeme", wagered: 356.56, prize: "—", last_updated: "19-Feb-26 12:00 am" },
+  { rank: 3, leaderboard_type: "current", masked_username: "RORUDMP", wagered: 100.0, prize: "—", last_updated: "19-Feb-26 12:00 am" },
+  { rank: 4, leaderboard_type: "current", masked_username: "metronxlafkah", wagered: 70.91, prize: "—", last_updated: "19-Feb-26 12:00 am" },
+  { rank: 5, leaderboard_type: "current", masked_username: "CrisScp892met", wagered: 43.66, prize: "—", last_updated: "19-Feb-26 12:00 am" },
+];
+
 function formatWagered(n: number): string {
   return n.toLocaleString();
+}
+
+/** Show only first 3 characters, rest as stars */
+function maskUsername(username: string): string {
+  if (!username || username.length <= 3) return username;
+  return username.slice(0, 3) + "*".repeat(username.length - 3);
 }
 
 const RANK_STYLES: Record<number, { bg: string; text: string }> = {
@@ -33,24 +47,14 @@ const RANK_STYLES: Record<number, { bg: string; text: string }> = {
 
 export function LeaderboardTable() {
   const [type, setType] = useState<LeaderboardType>("current");
-  const [data, setData] = useState<LeaderboardEntry[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
 
-  useEffect(() => {
-    setLoading(true);
-    setError(null);
-    setPage(0);
-    fetch(`/api/leaderboard?type=${type}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to load leaderboard");
-        return res.json();
-      })
-      .then(setData)
-      .catch(() => setError("Failed to load leaderboard. Please try again."))
-      .finally(() => setLoading(false));
+  const data = useMemo(() => {
+    if (type === "current") return STATIC_LEADERBOARD;
+    return []; // "Previous" tab: no static data; add entries here if needed
   }, [type]);
+
+  useEffect(() => setPage(0), [type]);
 
   const topThree = data.slice(0, 3);
   const tableData = data.slice(3);
@@ -78,19 +82,7 @@ export function LeaderboardTable() {
         ))}
       </div>
 
-      {error && (
-        <div className="rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 text-center text-sm">
-          {error}
-        </div>
-      )}
-
-      {loading && (
-        <div className="flex justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
-        </div>
-      )}
-
-      {!loading && !error && data.length > 0 && (
+      {data.length > 0 && (
         <>
           {/* Top 3 podium cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 justify-items-center !mt-32 mb-12">
@@ -116,10 +108,10 @@ export function LeaderboardTable() {
                       style={{ background: "rgba(234, 234, 234, 0.15)", color: "rgb(234, 234, 234)" }}
                       aria-hidden
                     >
-                      {entry.masked_username.replace(/\*/g, "").slice(-1).toUpperCase() || "?"}
+                      {(entry.masked_username[0] ?? "?").toUpperCase()}
                     </div>
                     <span className="text-center text-lg font-medium truncate max-w-full px-1 mt-2">
-                      {entry.masked_username}
+                      {maskUsername(entry.masked_username)}
                     </span>
                     <div className="flex flex-col items-center justify-center mt-2">
                       <div className="text-sm font-medium truncate max-w-full px-1">Wagered</div>
@@ -191,9 +183,9 @@ export function LeaderboardTable() {
                       style={{ background: "rgba(234, 234, 234, 0.12)", color: "rgb(234, 234, 234)" }}
                       aria-hidden
                     >
-                      {row.masked_username.replace(/\*/g, "").slice(-1).toUpperCase() || "?"}
+                      {(row.masked_username[0] ?? "?").toUpperCase()}
                     </div>
-                    <span className="font-semibold text-foreground truncate">{row.masked_username}</span>
+                    <span className="font-semibold text-foreground truncate">{maskUsername(row.masked_username)}</span>
                   </div>
                   <div className="col-span-2 sm:col-span-1 flex sm:justify-end">
                     <span className="text-sm sm:text-base font-semibold">
@@ -237,7 +229,7 @@ export function LeaderboardTable() {
         </>
       )}
 
-      {!loading && !error && data.length === 0 && (
+      {data.length === 0 && (
         <div className="rounded-lg bg-white/5 border border-white/10 text-muted-foreground px-4 py-8 text-center">
           No leaderboard data for this period.
         </div>
