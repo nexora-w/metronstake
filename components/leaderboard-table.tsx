@@ -21,13 +21,13 @@ const LEADERBOARD_TABS: { value: LeaderboardType; label: string }[] = [
   { value: "previous", label: "Previous" }
 ];
 
-// $3k leaderboard — total pool $3,000
+// $3k leaderboard — prize distribution
 const STATIC_LEADERBOARD: LeaderboardEntry[] = [
   { rank: 1, leaderboard_type: "current", masked_username: "Plfokraker88i", wagered: 606.73, prize: "$1,500", last_updated: "19-Feb-26 12:00 am" },
-  { rank: 2, leaderboard_type: "current", masked_username: "PaunJebeMeme", wagered: 356.56, prize: "$900", last_updated: "19-Feb-26 12:00 am" },
-  { rank: 3, leaderboard_type: "current", masked_username: "RORUDMP", wagered: 100.0, prize: "$450", last_updated: "19-Feb-26 12:00 am" },
-  { rank: 4, leaderboard_type: "current", masked_username: "metronxlafkah", wagered: 70.91, prize: "$100", last_updated: "19-Feb-26 12:00 am" },
-  { rank: 5, leaderboard_type: "current", masked_username: "CrisScp892met", wagered: 43.66, prize: "$50", last_updated: "19-Feb-26 12:00 am" },
+  { rank: 2, leaderboard_type: "current", masked_username: "PaunJebeMeme", wagered: 356.56, prize: "$750", last_updated: "19-Feb-26 12:00 am" },
+  { rank: 3, leaderboard_type: "current", masked_username: "RORUDMP", wagered: 100.0, prize: "$250", last_updated: "19-Feb-26 12:00 am" },
+  { rank: 4, leaderboard_type: "current", masked_username: "metronxlafkah", wagered: 70.91, prize: "$125", last_updated: "19-Feb-26 12:00 am" },
+  { rank: 5, leaderboard_type: "current", masked_username: "CrisScp892met", wagered: 43.66, prize: "$100", last_updated: "19-Feb-26 12:00 am" }
 ];
 
 function formatWagered(n: number): string {
