@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
 import { LeaderboardTable } from "@/components/leaderboard-table";
+import { MonthlyCountdown } from "@/components/countdown-timer";
 import localFont from "next/font/local";
 import Image from "next/image";
 const sportsWorld = localFont({
@@ -66,6 +67,7 @@ export default function LeaderboardsPage() {
               >
                 Monthly Leaderboard
               </div>
+              <MonthlyCountdown />
             </div>
           </div>
           <LeaderboardTable />
