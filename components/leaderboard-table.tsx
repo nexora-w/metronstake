@@ -27,9 +27,12 @@ function formatWagered(n: number): string {
   return n.toLocaleString();
 }
 
-/** Show only first 3 characters, rest as stars */
+const EMPTY_SLOT_LABEL = "—";
+
+/** Show only first 3 characters, rest as stars; empty slot shows as — */
 function maskUsername(username: string): string {
-  if (!username || username.length <= 3) return username;
+  if (!username || !username.trim()) return EMPTY_SLOT_LABEL;
+  if (username.length <= 3) return username;
   return username.slice(0, 3) + "*".repeat(username.length - 3);
 }
 
@@ -112,7 +115,7 @@ export function LeaderboardTable() {
                       style={{ background: "rgba(234, 234, 234, 0.15)", color: "rgb(234, 234, 234)" }}
                       aria-hidden
                     >
-                      {(entry.masked_username[0] ?? "?").toUpperCase()}
+                      {(entry.masked_username?.trim() ? entry.masked_username[0] : null)?.toUpperCase() ?? "—"}
                     </div>
                     <span className="text-center text-lg font-medium truncate max-w-full px-1 mt-2">
                       {maskUsername(entry.masked_username)}
@@ -187,7 +190,7 @@ export function LeaderboardTable() {
                       style={{ background: "rgba(234, 234, 234, 0.12)", color: "rgb(234, 234, 234)" }}
                       aria-hidden
                     >
-                      {(row.masked_username[0] ?? "?").toUpperCase()}
+                      {(row.masked_username?.trim() ? row.masked_username[0] : null)?.toUpperCase() ?? "—"}
                     </div>
                     <span className="font-semibold text-foreground truncate">{maskUsername(row.masked_username)}</span>
                   </div>

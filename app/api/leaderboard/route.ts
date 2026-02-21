@@ -88,6 +88,9 @@ function getCredentials(): Record<string, unknown> | null {
   return null;
 }
 
+/** Number of prize slots to always display. */
+const PRIZE_SLOT_COUNT = 11;
+
 /** Prize by rank (e.g. $3k leaderboard). Sheet has no prize column, so we derive it. */
 const PRIZE_BY_RANK: Record<number, string> = {
   1: "$1,500",
@@ -203,7 +206,27 @@ export async function GET(request: NextRequest) {
         : type === "current"
           ? sorted
           : [];
-    return NextResponse.json(result);
+
+    // Always return PRIZE_SLOT_COUNT entries so all prize slots are visible (e.g. 6 users → still show ranks 7–11 with prize, empty user).
+    const resultByRank = new Map(result.map((e) => [e.rank, e]));
+    const leaderboardType = result[0]?.leaderboard_type ?? type;
+    const padded: LeaderboardEntry[] = [];
+    for (let r = 1; r <= PRIZE_SLOT_COUNT; r++) {
+      const existing = resultByRank.get(r);
+      if (existing) {
+        padded.push(existing);
+      } else {
+        padded.push({
+          rank: r,
+          leaderboard_type: leaderboardType,
+          masked_username: "",
+          wagered: 0,
+          prize: PRIZE_BY_RANK[r] ?? "",
+          last_updated: "",
+        });
+      }
+    }
+    return NextResponse.json(padded);
   } catch (err) {
     console.error("[leaderboard] Google Sheets fetch error:", err);
     return NextResponse.json(
