@@ -95,6 +95,12 @@ const PRIZE_BY_RANK: Record<number, string> = {
   3: "$250",
   4: "$125",
   5: "$100",
+  6: "$80",
+  7: "$60",
+  8: "$50",
+  9: "$40",
+  10: "$30",
+  11: "$15",
 };
 
 function get(key: string, headers: string[], values: string[]): string | undefined {

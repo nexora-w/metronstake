@@ -110,17 +110,17 @@ export function CountdownTimer({ endDate, variant = "default" }: CountdownTimerP
   )
 }
 
-/** End of the current month in UTC (last moment of last day of month). */
-export function getEndOfCurrentMonthUTC(): Date {
+/** Leaderboard end date: 16th March end of day UTC (this year or next if already passed). */
+export function getLeaderboardEndDateUTC(): Date {
   const now = new Date()
   const year = now.getUTCFullYear()
-  const month = now.getUTCMonth()
-  return new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999))
+  const march16 = new Date(Date.UTC(year, 2, 16, 23, 59, 59, 999)) // month is 0-indexed
+  return now > march16 ? new Date(Date.UTC(year + 1, 2, 16, 23, 59, 59, 999)) : march16
 }
 
-/** Countdown to end of current month with polygon-style boxes. Use on leaderboards page. */
+/** Countdown to 16th March with polygon-style boxes. Use on leaderboards page. */
 export function MonthlyCountdown() {
   return (
-    <CountdownTimer endDate={getEndOfCurrentMonthUTC()} variant="polygon" />
+    <CountdownTimer endDate={getLeaderboardEndDateUTC()} variant="polygon" />
   )
 }
