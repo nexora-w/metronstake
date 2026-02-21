@@ -14,24 +14,73 @@ export type LeaderboardEntry = {
   last_updated: string;
 };
 
-function getCredentials() {
+/** Build credentials from individual env vars (preferred) or from JSON/file fallbacks. */
+function getCredentials(): Record<string, unknown> | null {
+  // 1) Single JSON env var (legacy)
   const raw = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
   if (raw) {
     try {
-      return JSON.parse(raw) as object;
+      return JSON.parse(raw) as Record<string, unknown>;
     } catch {
       console.error("[leaderboard] Invalid GOOGLE_SERVICE_ACCOUNT_JSON");
       return null;
     }
   }
-  // Local dev: optional path to g-service.json (do not commit that file)
+
+  // 2) Individual env vars (one per JSON field)
+  const type = process.env.GOOGLE_SERVICE_ACCOUNT_TYPE;
+  const project_id = process.env.GOOGLE_SERVICE_ACCOUNT_PROJECT_ID;
+  const private_key_id = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY_ID;
+  const private_key = process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY;
+  const client_email = process.env.GOOGLE_SERVICE_ACCOUNT_CLIENT_EMAIL;
+  const client_id = process.env.GOOGLE_SERVICE_ACCOUNT_CLIENT_ID;
+  const auth_uri = process.env.GOOGLE_SERVICE_ACCOUNT_AUTH_URI;
+  const token_uri = process.env.GOOGLE_SERVICE_ACCOUNT_TOKEN_URI;
+  const auth_provider_x509_cert_url =
+    process.env.GOOGLE_SERVICE_ACCOUNT_AUTH_PROVIDER_X509_CERT_URL;
+  const client_x509_cert_url =
+    process.env.GOOGLE_SERVICE_ACCOUNT_CLIENT_X509_CERT_URL;
+  const universe_domain = process.env.GOOGLE_SERVICE_ACCOUNT_UNIVERSE_DOMAIN;
+
+  if (
+    type &&
+    project_id &&
+    private_key_id &&
+    private_key &&
+    client_email &&
+    client_id
+  ) {
+    return {
+      type,
+      project_id,
+      private_key_id,
+      // Env vars often store newlines as literal \n
+      private_key: private_key.replace(/\\n/g, "\n"),
+      client_email,
+      client_id,
+      auth_uri: auth_uri || "https://accounts.google.com/o/oauth2/auth",
+      token_uri: token_uri || "https://oauth2.googleapis.com/token",
+      auth_provider_x509_cert_url:
+        auth_provider_x509_cert_url ||
+        "https://www.googleapis.com/oauth2/v1/certs",
+      client_x509_cert_url:
+        client_x509_cert_url ||
+        "https://www.googleapis.com/robot/v1/metadata/x509/metron%40cs2dle.iam.gserviceaccount.com",
+      universe_domain: universe_domain || "googleapis.com",
+    };
+  }
+
+  // 3) Local dev: optional path to credentials JSON (do not commit that file)
   const path = process.env.GOOGLE_APPLICATION_CREDENTIALS || "g-service.json";
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const fs = require("fs");
     const resolved = require("path").resolve(process.cwd(), path);
     if (fs.existsSync(resolved)) {
-      return JSON.parse(fs.readFileSync(resolved, "utf8")) as object;
+      return JSON.parse(fs.readFileSync(resolved, "utf8")) as Record<
+        string,
+        unknown
+      >;
     }
   } catch (e) {
     console.error("[leaderboard] Failed to read credentials file:", e);
