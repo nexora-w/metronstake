@@ -8,4 +8,5 @@ node_modules/
 .next/
 .env*.local
 .DS_Store
-g-service.json
+
+google-service-account.json
