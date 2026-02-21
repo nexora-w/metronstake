@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 const ROWS_PER_PAGE = 10;
 
@@ -21,14 +21,7 @@ const LEADERBOARD_TABS: { value: LeaderboardType; label: string }[] = [
   { value: "previous", label: "Previous" }
 ];
 
-// $3k leaderboard — prize distribution
-const STATIC_LEADERBOARD: LeaderboardEntry[] = [
-  { rank: 1, leaderboard_type: "current", masked_username: "Plfokraker88i", wagered: 606.73, prize: "$1,500", last_updated: "19-Feb-26 12:00 am" },
-  { rank: 2, leaderboard_type: "current", masked_username: "PaunJebeMeme", wagered: 356.56, prize: "$750", last_updated: "19-Feb-26 12:00 am" },
-  { rank: 3, leaderboard_type: "current", masked_username: "RORUDMP", wagered: 100.0, prize: "$250", last_updated: "19-Feb-26 12:00 am" },
-  { rank: 4, leaderboard_type: "current", masked_username: "metronxlafkah", wagered: 70.91, prize: "$125", last_updated: "19-Feb-26 12:00 am" },
-  { rank: 5, leaderboard_type: "current", masked_username: "CrisScp892met", wagered: 43.66, prize: "$100", last_updated: "19-Feb-26 12:00 am" }
-];
+const API_LEADERBOARD = "/api/leaderboard";
 
 function formatWagered(n: number): string {
   return n.toLocaleString();
@@ -49,13 +42,23 @@ const RANK_STYLES: Record<number, { bg: string; text: string }> = {
 export function LeaderboardTable() {
   const [type, setType] = useState<LeaderboardType>("current");
   const [page, setPage] = useState(0);
+  const [data, setData] = useState<LeaderboardEntry[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const data = useMemo(() => {
-    if (type === "current") return STATIC_LEADERBOARD;
-    return []; // "Previous" tab: no static data; add entries here if needed
+  useEffect(() => {
+    setPage(0);
+    setLoading(true);
+    setError(null);
+    fetch(`${API_LEADERBOARD}?type=${encodeURIComponent(type)}`)
+      .then((res) => {
+        if (!res.ok) throw new Error(res.status === 503 ? "Leaderboard not configured" : "Failed to load");
+        return res.json();
+      })
+      .then((entries: LeaderboardEntry[]) => setData(Array.isArray(entries) ? entries : []))
+      .catch((e) => setError(e instanceof Error ? e.message : "Failed to load leaderboard"))
+      .finally(() => setLoading(false));
   }, [type]);
-
-  useEffect(() => setPage(0), [type]);
 
   const topThree = data.slice(0, 3);
   const tableData = data.slice(3);
@@ -230,7 +233,19 @@ export function LeaderboardTable() {
         </>
       )}
 
-      {data.length === 0 && (
+      {loading && (
+        <div className="rounded-lg bg-white/5 border border-white/10 text-muted-foreground px-4 py-8 text-center">
+          Loading leaderboard…
+        </div>
+      )}
+
+      {!loading && error && (
+        <div className="rounded-lg bg-white/5 border border-white/10 text-muted-foreground px-4 py-8 text-center">
+          {error}
+        </div>
+      )}
+
+      {!loading && !error && data.length === 0 && (
         <div className="rounded-lg bg-white/5 border border-white/10 text-muted-foreground px-4 py-8 text-center">
           No leaderboard data for this period.
         </div>
