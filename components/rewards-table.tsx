@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-const CLAIM_URL = "https://stake.com/?c=metron&offer=metron";
+const CLAIM_URL = "https://discord.gg/DksZ9jEmGe";
 
 function tierImageSlug(tier: string): string {
   if (tier.startsWith("Platinum")) return "platinum";

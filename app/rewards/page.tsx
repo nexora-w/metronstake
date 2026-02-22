@@ -26,6 +26,14 @@ export default function RewardsPage() {
             <p className="mt-2 text-muted-foreground">
               Claim your tier bonuses based on volume.
             </p>
+            <div className="mt-4 rounded-lg border border-amber-500/40 bg-black/50 px-4 py-3 backdrop-blur-sm max-w-2xl mx-auto">
+              <p className="text-sm text-amber-200/95">
+                <strong className="text-amber-400">To claim rank-up bonuses:</strong> join my Discord and open a support ticket.
+              </p>
+              <p className="text-xs text-white/70 mt-1">
+                Use the Claim button below to go to Discord.
+              </p>
+            </div>
           </div>
           <RewardsTable />
         </div>
