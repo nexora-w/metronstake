@@ -3,7 +3,8 @@ import { google } from "googleapis";
 
 const SPREADSHEET_ID = "1GPX7WKN9NkTfLqX847-0xt9gflTHiE84nW4ve_u8fCY";
 /** Sheet tab with gid=235680015 from the share URL */
-const TARGET_SHEET_GID = 235680015;
+const TARGET_SHEET_GID = 1502602180;
+// const TARGET_SHEET_GID = 235680015;
 
 export type LeaderboardEntry = {
   rank: number;
