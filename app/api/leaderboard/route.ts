@@ -118,6 +118,60 @@ function get(key: string, headers: string[], values: string[]): string | undefin
   return values[i]?.toString().trim();
 }
 
+function normalizeUsername(name: string): string {
+  return String(name ?? "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase();
+}
+
+function dateValue(s: string): number {
+  const t = Date.parse(String(s ?? ""));
+  return Number.isFinite(t) ? t : 0;
+}
+
+function mergeByUserKeepHigherWagered(
+  list: LeaderboardEntry[]
+): LeaderboardEntry[] {
+  const byUser = new Map<string, LeaderboardEntry>();
+
+  for (const entry of list) {
+    const key = normalizeUsername(entry.masked_username);
+    if (!key) continue;
+
+    const existing = byUser.get(key);
+    if (!existing) {
+      byUser.set(key, entry);
+      continue;
+    }
+
+    if (entry.wagered > existing.wagered) {
+      byUser.set(key, entry);
+      continue;
+    }
+    if (entry.wagered < existing.wagered) {
+      continue;
+    }
+
+    // Tie-breakers when wagered is equal:
+    // 1) better rank (smaller number)
+    if (entry.rank < existing.rank) {
+      byUser.set(key, entry);
+      continue;
+    }
+    if (entry.rank > existing.rank) {
+      continue;
+    }
+
+    // 2) latest timestamp (if parseable)
+    if (dateValue(entry.last_updated) > dateValue(existing.last_updated)) {
+      byUser.set(key, entry);
+    }
+  }
+
+  return Array.from(byUser.values());
+}
+
 /** Map sheet row to LeaderboardEntry. Sheet columns: affiliate_name, campaign_code, user_name, wagered, rank, start_date_utc, end_date_utc */
 function rowToEntry(
   headers: string[],
@@ -203,9 +257,9 @@ export async function GET(request: NextRequest) {
     if (!entries.length) {
       return NextResponse.json([]);
     }
-    entries.sort((a, b) => a.rank - b.rank);
-    const byRank = new Map(entries.map((e) => [e.rank, e]));
-    const sorted = Array.from(byRank.values()).sort((a, b) => a.rank - b.rank);
+
+    // Sort all combined rows purely by rank; do not de-duplicate by rank
+    const sorted = entries.slice().sort((a, b) => a.rank - b.rank);
 
     // type "current" / "previous" → filter by campaign_code (e.g. "metron" = current)
     const filtered = sorted.filter(
@@ -219,7 +273,16 @@ export async function GET(request: NextRequest) {
           ? sorted
           : [];
 
-    // Always return PRIZE_SLOT_COUNT entries so all prize slots are visible (e.g. 6 users → still show ranks 7–11 with prize, empty user).
+    // When combining multiple sheets, return all rows in rank order
+    // so data from every document is visible (no truncation/padding).
+    if (TARGET_SHEET_GIDS.length > 1) {
+      const merged = mergeByUserKeepHigherWagered(result).sort(
+        (a, b) => a.rank - b.rank
+      );
+      return NextResponse.json(merged);
+    }
+
+    // Single-sheet mode: always return PRIZE_SLOT_COUNT entries so all prize slots are visible
     const resultByRank = new Map(result.map((e) => [e.rank, e]));
     const leaderboardType = result[0]?.leaderboard_type ?? type;
     const padded: LeaderboardEntry[] = [];
