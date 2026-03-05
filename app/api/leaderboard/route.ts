@@ -130,7 +130,7 @@ function dateValue(s: string): number {
   return Number.isFinite(t) ? t : 0;
 }
 
-function mergeByUserKeepHigherWagered(
+function mergeByUserCombineWagered(
   list: LeaderboardEntry[]
 ): LeaderboardEntry[] {
   const byUser = new Map<string, LeaderboardEntry>();
@@ -145,28 +145,20 @@ function mergeByUserKeepHigherWagered(
       continue;
     }
 
-    if (entry.wagered > existing.wagered) {
-      byUser.set(key, entry);
-      continue;
-    }
-    if (entry.wagered < existing.wagered) {
-      continue;
-    }
+    const combinedWagered = existing.wagered + entry.wagered;
+    const betterRank = Math.min(existing.rank, entry.rank);
+    const laterUpdated =
+      dateValue(entry.last_updated) > dateValue(existing.last_updated)
+        ? entry.last_updated
+        : existing.last_updated;
 
-    // Tie-breakers when wagered is equal:
-    // 1) better rank (smaller number)
-    if (entry.rank < existing.rank) {
-      byUser.set(key, entry);
-      continue;
-    }
-    if (entry.rank > existing.rank) {
-      continue;
-    }
-
-    // 2) latest timestamp (if parseable)
-    if (dateValue(entry.last_updated) > dateValue(existing.last_updated)) {
-      byUser.set(key, entry);
-    }
+    byUser.set(key, {
+      ...existing,
+      wagered: combinedWagered,
+      rank: betterRank,
+      prize: PRIZE_BY_RANK[betterRank] ?? existing.prize,
+      last_updated: laterUpdated,
+    });
   }
 
   return Array.from(byUser.values());
@@ -276,7 +268,7 @@ export async function GET(request: NextRequest) {
     // When combining multiple sheets, return all rows in rank order
     // so data from every document is visible (no truncation/padding).
     if (TARGET_SHEET_GIDS.length > 1) {
-      const merged = mergeByUserKeepHigherWagered(result).sort(
+      const merged = mergeByUserCombineWagered(result).sort(
         (a, b) => a.rank - b.rank
       );
       return NextResponse.json(merged);
