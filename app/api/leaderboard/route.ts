@@ -2,9 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
 
 const SPREADSHEET_ID = "1GPX7WKN9NkTfLqX847-0xt9gflTHiE84nW4ve_u8fCY";
-/** Sheet tab with gid=235680015 from the share URL */
-// const TARGET_SHEET_GID = 1502602180;
-const TARGET_SHEET_GID = 235680015;
+/**
+ * Sheet tabs to combine. Both tabs are read and merged into a single leaderboard.
+ *  - 1502602180
+ *  - 235680015
+ */
+const TARGET_SHEET_GIDS = [1502602180, 235680015];
 
 export type LeaderboardEntry = {
   rank: number;
@@ -164,33 +167,41 @@ export async function GET(request: NextRequest) {
     });
     const sheets = google.sheets({ version: "v4", auth });
 
-    // Resolve sheet title for gid so we read the correct tab
+    // Fetch spreadsheet metadata once so we can resolve titles for all target gids
     const meta = await sheets.spreadsheets.get({
       spreadsheetId: SPREADSHEET_ID,
     });
-    const sheet = meta.data.sheets?.find(
-      (s) => (s.properties?.sheetId ?? 0) === TARGET_SHEET_GID
-    );
-    const sheetTitle =
-      sheet?.properties?.title ?? meta.data.sheets?.[0]?.properties?.title ?? "Sheet1";
-    const range = `'${sheetTitle}'!A:Z`;
 
-    const res = await sheets.spreadsheets.values.get({
-      spreadsheetId: SPREADSHEET_ID,
-      range,
-    });
+    const entries: LeaderboardEntry[] = [];
 
-    const rows = res.data.values as string[][] | undefined;
-    if (!rows || rows.length < 2) {
-      return NextResponse.json([]);
+    for (const gid of TARGET_SHEET_GIDS) {
+      const sheet = meta.data.sheets?.find(
+        (s) => (s.properties?.sheetId ?? 0) === gid
+      );
+      const sheetTitle =
+        sheet?.properties?.title ?? meta.data.sheets?.[0]?.properties?.title ?? "Sheet1";
+      const range = `'${sheetTitle}'!A:Z`;
+
+      const res = await sheets.spreadsheets.values.get({
+        spreadsheetId: SPREADSHEET_ID,
+        range,
+      });
+
+      const rows = res.data.values as string[][] | undefined;
+      if (!rows || rows.length < 2) {
+        continue;
+      }
+
+      const headers = rows[0].map((h) => String(h ?? "").trim());
+      for (let i = 1; i < rows.length; i++) {
+        const values = rows[i] ?? [];
+        const entry = rowToEntry(headers, values);
+        if (entry) entries.push(entry);
+      }
     }
 
-    const headers = rows[0].map((h) => String(h ?? "").trim());
-    const entries: LeaderboardEntry[] = [];
-    for (let i = 1; i < rows.length; i++) {
-      const values = rows[i] ?? [];
-      const entry = rowToEntry(headers, values);
-      if (entry) entries.push(entry);
+    if (!entries.length) {
+      return NextResponse.json([]);
     }
     entries.sort((a, b) => a.rank - b.rank);
     const byRank = new Map(entries.map((e) => [e.rank, e]));
