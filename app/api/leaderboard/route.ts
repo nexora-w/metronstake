@@ -146,7 +146,6 @@ function mergeByUserCombineWagered(
     }
 
     const combinedWagered = existing.wagered + entry.wagered;
-    const betterRank = Math.min(existing.rank, entry.rank);
     const laterUpdated =
       dateValue(entry.last_updated) > dateValue(existing.last_updated)
         ? entry.last_updated
@@ -155,8 +154,6 @@ function mergeByUserCombineWagered(
     byUser.set(key, {
       ...existing,
       wagered: combinedWagered,
-      rank: betterRank,
-      prize: PRIZE_BY_RANK[betterRank] ?? existing.prize,
       last_updated: laterUpdated,
     });
   }
@@ -265,13 +262,24 @@ export async function GET(request: NextRequest) {
           ? sorted
           : [];
 
-    // When combining multiple sheets, return all rows in rank order
-    // so data from every document is visible (no truncation/padding).
+    // When combining multiple sheets, sum wagers per user across sheets,
+    // then recalculate ranks and prizes based on the combined totals.
     if (TARGET_SHEET_GIDS.length > 1) {
-      const merged = mergeByUserCombineWagered(result).sort(
-        (a, b) => a.rank - b.rank
-      );
-      return NextResponse.json(merged);
+      const merged = mergeByUserCombineWagered(result);
+
+      const ranked = merged
+        .slice()
+        .sort((a, b) => b.wagered - a.wagered || a.masked_username.localeCompare(b.masked_username))
+        .map((entry, index) => {
+          const newRank = index + 1;
+          return {
+            ...entry,
+            rank: newRank,
+            prize: PRIZE_BY_RANK[newRank] ?? "",
+          };
+        });
+
+      return NextResponse.json(ranked);
     }
 
     // Single-sheet mode: always return PRIZE_SLOT_COUNT entries so all prize slots are visible
