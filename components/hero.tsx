@@ -56,7 +56,7 @@ export function Hero() {
               flex items-center justify-center gap-2
             "
             onClick={() => {
-              router.push("/#leaderboards");
+              router.push("/leaderboards");
             }}
           >
             {/* Animated background circle — sized from button so it always fills on hover */}

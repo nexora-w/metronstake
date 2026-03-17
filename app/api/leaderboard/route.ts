@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
 
 const SPREADSHEET_ID = "1GPX7WKN9NkTfLqX847-0xt9gflTHiE84nW4ve_u8fCY";
-/**
- * Sheet tabs to combine. Both tabs are read and merged into a single leaderboard.
- *  - 1502602180
- *  - 235680015
- */
-const TARGET_SHEET_GIDS = [1502602180, 235680015];
+/** Single sheet tab for the leaderboard. */
+const TARGET_SHEET_GIDS = [235680015];
+
+/** Previous leaderboard spreadsheet (historical data). */
+const PREVIOUS_SPREADSHEET_ID = "1f4KndNmDhPlRTpRafx32TysqCCcgFZbS96OnwTpw7Hk";
+/** Previous leaderboard tab gid (from URL #gid=2077816179). */
+const PREVIOUS_SHEET_GIDS = [2077816179];
 
 export type LeaderboardEntry = {
   rank: number;
@@ -164,7 +165,8 @@ function mergeByUserCombineWagered(
 /** Map sheet row to LeaderboardEntry. Sheet columns: affiliate_name, campaign_code, user_name, wagered, rank, start_date_utc, end_date_utc */
 function rowToEntry(
   headers: string[],
-  values: string[]
+  values: string[],
+  fallbackLeaderboardType: string
 ): LeaderboardEntry | null {
   const g = (key: string) => get(key, headers, values);
   const rankRaw = g("rank");
@@ -177,8 +179,7 @@ function rowToEntry(
     String(wageredRaw ?? "0").replace(/[$,]/g, "")
   ) || 0;
   const last_updated = g("end_date_utc") ?? g("start_date_utc") ?? "";
-  const campaign_code = g("campaign_code") ?? "metron";
-  const leaderboard_type = campaign_code;
+  const leaderboard_type = g("campaign_code") ?? fallbackLeaderboardType;
   const prize = PRIZE_BY_RANK[rank] ?? "";
 
   return {
@@ -194,7 +195,13 @@ function rowToEntry(
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const type = searchParams.get("type") ?? "current";
+    const type = (searchParams.get("type") ?? "current").toLowerCase();
+    const isPrevious = type === "previous";
+
+    // Current leaderboard: no data source yet
+    if (!isPrevious) {
+      return NextResponse.json([]);
+    }
 
     const creds = getCredentials();
     if (!creds) {
@@ -210,14 +217,18 @@ export async function GET(request: NextRequest) {
     });
     const sheets = google.sheets({ version: "v4", auth });
 
+    const spreadsheetId = isPrevious ? PREVIOUS_SPREADSHEET_ID : SPREADSHEET_ID;
+    const targetGids = isPrevious ? PREVIOUS_SHEET_GIDS : TARGET_SHEET_GIDS;
+    const fallbackLeaderboardType = isPrevious ? "previous" : "metron";
+
     // Fetch spreadsheet metadata once so we can resolve titles for all target gids
     const meta = await sheets.spreadsheets.get({
-      spreadsheetId: SPREADSHEET_ID,
+      spreadsheetId,
     });
 
     const entries: LeaderboardEntry[] = [];
 
-    for (const gid of TARGET_SHEET_GIDS) {
+    for (const gid of targetGids) {
       const sheet = meta.data.sheets?.find(
         (s) => (s.properties?.sheetId ?? 0) === gid
       );
@@ -226,7 +237,7 @@ export async function GET(request: NextRequest) {
       const range = `'${sheetTitle}'!A:Z`;
 
       const res = await sheets.spreadsheets.values.get({
-        spreadsheetId: SPREADSHEET_ID,
+        spreadsheetId,
         range,
       });
 
@@ -238,7 +249,7 @@ export async function GET(request: NextRequest) {
       const headers = rows[0].map((h) => String(h ?? "").trim());
       for (let i = 1; i < rows.length; i++) {
         const values = rows[i] ?? [];
-        const entry = rowToEntry(headers, values);
+        const entry = rowToEntry(headers, values, fallbackLeaderboardType);
         if (entry) entries.push(entry);
       }
     }
@@ -250,21 +261,11 @@ export async function GET(request: NextRequest) {
     // Sort all combined rows purely by rank; do not de-duplicate by rank
     const sorted = entries.slice().sort((a, b) => a.rank - b.rank);
 
-    // type "current" / "previous" → filter by campaign_code (e.g. "metron" = current)
-    const filtered = sorted.filter(
-      (entry) => entry.leaderboard_type.toLowerCase() === type.toLowerCase()
-    );
-    // Current tab: if no campaign match, show all (sheet only has "metron"). Previous: show only if campaign matches.
-    const result =
-      filtered.length > 0
-        ? filtered
-        : type === "current"
-          ? sorted
-          : [];
+    const result = sorted;
 
     // When combining multiple sheets, sum wagers per user across sheets,
     // then recalculate ranks and prizes based on the combined totals.
-    if (TARGET_SHEET_GIDS.length > 1) {
+    if (targetGids.length > 1) {
       const merged = mergeByUserCombineWagered(result);
 
       const ranked = merged
