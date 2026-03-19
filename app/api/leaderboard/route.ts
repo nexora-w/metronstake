@@ -96,8 +96,7 @@ function getCredentials(): Record<string, unknown> | null {
 /** Number of prize slots to always display. */
 const PRIZE_SLOT_COUNT = 20;
 
-/** Prize by rank (e.g. $3k leaderboard). Sheet has no prize column, so we derive it. */
-const PRIZE_BY_RANK: Record<number, string> = {
+const PRIZE_BY_RANK_CURRENT: Record<number, string> = {
   1: "$3.750,00",
   2: "$1.600,00",
   3: "$750,00",
@@ -118,6 +117,20 @@ const PRIZE_BY_RANK: Record<number, string> = {
   18: "$15,00",
   19: "$10,00",
   20: "$10,00",
+};
+
+const PRIZE_BY_RANK_PREVIOUS: Record<number, string> = {
+  1: "$1,500",
+  2: "$750",
+  3: "$250",
+  4: "$125",
+  5: "$100",
+  6: "$80",
+  7: "$60",
+  8: "$50",
+  9: "$40",
+  10: "$30",
+  11: "$15",
 };
 
 function get(key: string, headers: string[], values: string[]): string | undefined {
@@ -144,7 +157,8 @@ function dateValue(s: string): number {
 function rowToEntry(
   headers: string[],
   values: string[],
-  fallbackLeaderboardType: string
+  fallbackLeaderboardType: string,
+  prizeByRank: Record<number, string>
 ): LeaderboardEntry | null {
   const g = (key: string) => get(key, headers, values);
   const rankRaw = g("rank");
@@ -158,7 +172,7 @@ function rowToEntry(
   ) || 0;
   const last_updated = g("end_date_utc") ?? g("start_date_utc") ?? "";
   const leaderboard_type = g("campaign_code") ?? fallbackLeaderboardType;
-  const prize = PRIZE_BY_RANK[rank] ?? "";
+  const prize = prizeByRank[rank] ?? "";
 
   return {
     rank,
@@ -193,6 +207,7 @@ export async function GET(request: NextRequest) {
     const spreadsheetId = isPrevious ? PREVIOUS_SPREADSHEET_ID : SPREADSHEET_ID;
     const targetGids = isPrevious ? PREVIOUS_SHEET_GIDS : TARGET_SHEET_GIDS;
     const fallbackLeaderboardType = isPrevious ? "previous" : "metron";
+    const prizeByRank = isPrevious ? PRIZE_BY_RANK_PREVIOUS : PRIZE_BY_RANK_CURRENT;
 
     // Fetch spreadsheet metadata once so we can resolve titles for all target gids
     const meta = await sheets.spreadsheets.get({
@@ -222,7 +237,7 @@ export async function GET(request: NextRequest) {
       const headers = rows[0].map((h) => String(h ?? "").trim());
       for (let i = 1; i < rows.length; i++) {
         const values = rows[i] ?? [];
-        const entry = rowToEntry(headers, values, fallbackLeaderboardType);
+        const entry = rowToEntry(headers, values, fallbackLeaderboardType, prizeByRank);
         if (entry) entries.push(entry);
       }
     }
@@ -255,7 +270,7 @@ export async function GET(request: NextRequest) {
           leaderboard_type: leaderboardType,
           masked_username: "",
           wagered: 0,
-          prize: PRIZE_BY_RANK[r] ?? "",
+          prize: prizeByRank[r] ?? "",
           last_updated: "",
         });
       }
