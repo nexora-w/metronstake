@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 const ROWS_PER_PAGE = 10;
 
 type LeaderboardType = "current" | "previous" | "us_current" | "us_previous";
+export type { LeaderboardType };
 
 type LeaderboardEntry = {
   rank: number;
@@ -42,18 +43,29 @@ const RANK_STYLES: Record<number, { bg: string; text: string }> = {
   3: { bg: "rgba(129, 129, 131, 0.2)", text: "rgb(129, 129, 131)" },
 };
 
-export function LeaderboardTable() {
-  const [type, setType] = useState<LeaderboardType>("current");
+type LeaderboardTableProps = {
+  type?: LeaderboardType;
+  onTypeChange?: (type: LeaderboardType) => void;
+};
+
+export function LeaderboardTable({ type, onTypeChange }: LeaderboardTableProps = {}) {
+  const [internalType, setInternalType] = useState<LeaderboardType>("current");
   const [page, setPage] = useState(0);
   const [data, setData] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const selectedType = type ?? internalType;
+
+  const handleTypeChange = (nextType: LeaderboardType) => {
+    if (type === undefined) setInternalType(nextType);
+    onTypeChange?.(nextType);
+  };
 
   useEffect(() => {
     setPage(0);
     setLoading(true);
     setError(null);
-    fetch(`${API_LEADERBOARD}?type=${encodeURIComponent(type)}`)
+    fetch(`${API_LEADERBOARD}?type=${encodeURIComponent(selectedType)}`)
       .then((res) => {
         if (!res.ok) throw new Error(res.status === 503 ? "Leaderboard not configured" : "Failed to load");
         return res.json();
@@ -61,7 +73,7 @@ export function LeaderboardTable() {
       .then((entries: LeaderboardEntry[]) => setData(Array.isArray(entries) ? entries : []))
       .catch((e) => setError(e instanceof Error ? e.message : "Failed to load leaderboard"))
       .finally(() => setLoading(false));
-  }, [type]);
+  }, [selectedType]);
 
   const topThree = data.slice(0, 3);
   const tableData = data.slice(3);
@@ -77,9 +89,9 @@ export function LeaderboardTable() {
           <button
             key={tab.value}
             type="button"
-            onClick={() => setType(tab.value)}
+            onClick={() => handleTypeChange(tab.value)}
             className={`min-h-[44px] min-w-[44px] px-5 py-2.5 sm:px-4 sm:py-2 rounded-lg text-sm font-medium transition-colors touch-manipulation ${
-              type === tab.value
+              selectedType === tab.value
                 ? "bg-amber-500/20 text-amber-400 border border-amber-500/40"
                 : "bg-white/5 text-muted-foreground border border-white/10 hover:bg-white/10 hover:text-foreground"
             }`}
@@ -98,7 +110,7 @@ export function LeaderboardTable() {
               const rankStyle = RANK_STYLES[entry.rank];
               return (
                 <div
-                  key={`card-${entry.rank}-${entry.masked_username}-${type}`}
+                  key={`card-${entry.rank}-${entry.masked_username}-${selectedType}`}
                   className={`relative w-full max-w-[124px] sm:max-w-[124px] md:max-w-[160px] lg:max-w-[200px] xl:max-w-[240px] aspect-[124/190] overflow-hidden ${entry.rank === 1 ? "-mt-2 sm:-mt-4 lg:-mt-6 xl:-mt-8" : ""}`}
                 >
                   <Image
@@ -165,7 +177,7 @@ export function LeaderboardTable() {
               const borderStyle = isLast ? "none" : "1px solid rgba(234, 234, 234, 0.04)";
               return (
                 <div
-                  key={`${row.rank}-${row.masked_username}-${type}-${start + i}`}
+                  key={`${row.rank}-${row.masked_username}-${selectedType}-${start + i}`}
                   className="transition-colors duration-200 hover:bg-white/[0.03]"
                   style={{ borderBottom: borderStyle, background: "transparent" }}
                 >
