@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
 
-const SPREADSHEET_ID = "1GPX7WKN9NkTfLqX847-0xt9gflTHiE84nW4ve_u8fCY";
+const SPREADSHEET_ID = "1f4KndNmDhPlRTpRafx32TysqCCcgFZbS96OnwTpw7Hk";
 /** Single sheet tab for the leaderboard. */
-const TARGET_SHEET_GIDS = [235680015];
+const TARGET_SHEET_GIDS = [802569950];
 
 /** Previous leaderboard spreadsheet (historical data). */
 const PREVIOUS_SPREADSHEET_ID = "1f4KndNmDhPlRTpRafx32TysqCCcgFZbS96OnwTpw7Hk";
-/** Previous leaderboard tab gid (from URL #gid=2077816179). */
+/** Previous leaderboard tab gid (from URL #gid=802569950). */
 const PREVIOUS_SHEET_GIDS = [2077816179];
 
 export type LeaderboardEntry = {
@@ -94,21 +94,30 @@ function getCredentials(): Record<string, unknown> | null {
 }
 
 /** Number of prize slots to always display. */
-const PRIZE_SLOT_COUNT = 11;
+const PRIZE_SLOT_COUNT = 20;
 
 /** Prize by rank (e.g. $3k leaderboard). Sheet has no prize column, so we derive it. */
 const PRIZE_BY_RANK: Record<number, string> = {
-  1: "$1,500",
-  2: "$750",
-  3: "$250",
-  4: "$125",
-  5: "$100",
-  6: "$80",
-  7: "$60",
-  8: "$50",
-  9: "$40",
-  10: "$30",
-  11: "$15",
+  1: "$3.750,00",
+  2: "$1.600,00",
+  3: "$750,00",
+  4: "$500,00",
+  5: "$250,00",
+  6: "$100,00",
+  7: "$85,00",
+  8: "$70,00",
+  9: "$60,00",
+  10: "$55,00",
+  11: "$50,00",
+  12: "$45,00",
+  13: "$40,00",
+  14: "$35,00",
+  15: "$30,00",
+  16: "$25,00",
+  17: "$20,00",
+  18: "$15,00",
+  19: "$10,00",
+  20: "$10,00",
 };
 
 function get(key: string, headers: string[], values: string[]): string | undefined {
@@ -129,37 +138,6 @@ function normalizeUsername(name: string): string {
 function dateValue(s: string): number {
   const t = Date.parse(String(s ?? ""));
   return Number.isFinite(t) ? t : 0;
-}
-
-function mergeByUserCombineWagered(
-  list: LeaderboardEntry[]
-): LeaderboardEntry[] {
-  const byUser = new Map<string, LeaderboardEntry>();
-
-  for (const entry of list) {
-    const key = normalizeUsername(entry.masked_username);
-    if (!key) continue;
-
-    const existing = byUser.get(key);
-    if (!existing) {
-      byUser.set(key, entry);
-      continue;
-    }
-
-    const combinedWagered = existing.wagered + entry.wagered;
-    const laterUpdated =
-      dateValue(entry.last_updated) > dateValue(existing.last_updated)
-        ? entry.last_updated
-        : existing.last_updated;
-
-    byUser.set(key, {
-      ...existing,
-      wagered: combinedWagered,
-      last_updated: laterUpdated,
-    });
-  }
-
-  return Array.from(byUser.values());
 }
 
 /** Map sheet row to LeaderboardEntry. Sheet columns: affiliate_name, campaign_code, user_name, wagered, rank, start_date_utc, end_date_utc */
@@ -197,11 +175,6 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const type = (searchParams.get("type") ?? "current").toLowerCase();
     const isPrevious = type === "previous";
-
-    // Current leaderboard: no data source yet
-    if (!isPrevious) {
-      return NextResponse.json([]);
-    }
 
     const creds = getCredentials();
     if (!creds) {
@@ -263,28 +236,13 @@ export async function GET(request: NextRequest) {
 
     const result = sorted;
 
-    // When combining multiple sheets, sum wagers per user across sheets,
-    // then recalculate ranks and prizes based on the combined totals.
-    if (targetGids.length > 1) {
-      const merged = mergeByUserCombineWagered(result);
-
-      const ranked = merged
-        .slice()
-        .sort((a, b) => b.wagered - a.wagered || a.masked_username.localeCompare(b.masked_username))
-        .map((entry, index) => {
-          const newRank = index + 1;
-          return {
-            ...entry,
-            rank: newRank,
-            prize: PRIZE_BY_RANK[newRank] ?? "",
-          };
-        });
-
-      return NextResponse.json(ranked);
+    // Pad output to always include all prize slots.
+    // If multiple rows share the same rank (e.g. multiple tabs), keep the first one after sorting.
+    const resultByRank = new Map<number, LeaderboardEntry>();
+    for (const e of result) {
+      if (resultByRank.has(e.rank)) continue;
+      resultByRank.set(e.rank, e);
     }
-
-    // Single-sheet mode: always return PRIZE_SLOT_COUNT entries so all prize slots are visible
-    const resultByRank = new Map(result.map((e) => [e.rank, e]));
     const leaderboardType = result[0]?.leaderboard_type ?? type;
     const padded: LeaderboardEntry[] = [];
     for (let r = 1; r <= PRIZE_SLOT_COUNT; r++) {
