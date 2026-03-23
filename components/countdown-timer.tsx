@@ -110,15 +110,15 @@ export function CountdownTimer({ endDate, variant = "default" }: CountdownTimerP
   )
 }
 
-/** Leaderboard end date: 16th April end of day UTC (this year or next if already passed). */
+/** Leaderboard end date: 17th April end of day UTC (this year or next if already passed). */
 export function getLeaderboardEndDateUTC(): Date {
   const now = new Date()
   const year = now.getUTCFullYear()
-  const april16 = new Date(Date.UTC(year, 3, 16, 23, 59, 59, 999)) // month is 0-indexed
-  return now > april16 ? new Date(Date.UTC(year + 1, 3, 16, 23, 59, 59, 999)) : april16
+  const april17 = new Date(Date.UTC(year, 3, 17, 23, 59, 59, 999)) // month is 0-indexed
+  return now > april17 ? new Date(Date.UTC(year + 1, 3, 17, 23, 59, 59, 999)) : april17
 }
 
-/** Countdown to 16th March with polygon-style boxes. Use on leaderboards page. */
+/** Countdown to 17th April with polygon-style boxes. Use on leaderboards page. */
 export function MonthlyCountdown() {
   return (
     <CountdownTimer endDate={getLeaderboardEndDateUTC()} variant="polygon" />
